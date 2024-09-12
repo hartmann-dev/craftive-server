@@ -96,3 +96,9 @@ test('can logout', function () {
     $response->assertStatus(Response::HTTP_NO_CONTENT);
 
 });
+
+test('can not logout', function () {
+    $response = $this->postJson(route('auth.logout'));
+    $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+
+});
