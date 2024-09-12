@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -14,18 +16,18 @@ class AuthController extends Controller
     public function register(Request $request)
     {
 
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|unique:users',
-            'password' => 'required|string',
-            'password_repeat' => 'required|same:password'
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:3', 'max:20'],
+            'email' => ['required', 'email', 'max:100', 'unique:users'],
+            'password' => ['required', Password::defaults()],
+            'password_repeat' => ['required', 'same:password']
         ]);
 
 
         $user = User::create([
-            'name'  => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'name'  => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         $token = $user->createToken(self::TOKEN_NAME)->plainTextToken;
