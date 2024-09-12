@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1726089254">
-  <project timestamp="1726089254">
+<coverage generated="1726089385">
+  <project timestamp="1726089385">
     <package name="App\Http\Controllers">
       <file name="/home/runner/work/craftive-server/craftive-server/app/Http/Controllers/AuthController.php">
         <class name="App\Http\Controllers\AuthController" namespace="App\Http\Controllers">
