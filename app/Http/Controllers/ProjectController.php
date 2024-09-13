@@ -25,8 +25,7 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-
-        $project = $request()->user()->projects()->create($request->validated());
+        $project = $request->user()->projects()->create($request->validated());
         return (new ProjectResource($project))->response()->setStatusCode(201);
     }
 
@@ -37,7 +36,6 @@ class ProjectController extends Controller
     {
         if ($this->projectBelongsToUser($project)) {
             return new ProjectResource($project);
-
         }
         abort(404);
     }

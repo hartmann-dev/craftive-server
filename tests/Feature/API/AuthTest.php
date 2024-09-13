@@ -4,8 +4,17 @@ use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
-use Illuminate\Support\Facades\Auth;
 
+
+dataset('auth-routes', [
+    'register has api' => ['auth.register', ['api']],
+    'login has api' =>  ['auth.login', ['api']],
+    'logout has api and auth' =>  ['auth.logout', ['api', 'auth:sanctum']]
+]);
+
+test('route has middlewares', function (String $route, array $middlewares) {
+    expect($route)->toHaveExactMiddlewares($middlewares);
+})->with('auth-routes');
 
 test('can register', function () {
     $userData = [
@@ -27,7 +36,7 @@ dataset('register-validation-rules', [
     'name is required' => ['name', ''],
     'name be a string' => ['name', ['name']],
     'name not too short' => ['name', 'ct'],
-    'name not too long' => ['name', fn() => longName()],
+    'name not too long' => ['name', fn() => longName(min: 15, max: 20)],
 
     'email is required' => ['email', '', 'e'],
     'email be valid' => ['email', 'craftive.app'],
@@ -46,10 +55,6 @@ function takenEmail(): string
     return $takenEmail;
 }
 
-function longName(): string
-{
-    return Str::repeat('craftive', rand(min: 15, max: 20));
-}
 
 test('register exception is thrown', function (string $field, string|array $value) {
     $userData = [
@@ -65,7 +70,7 @@ test('register exception is thrown', function (string $field, string|array $valu
 
 
 test('can login', function () {
-    $user = User::factory()->create(['password' => 'test' ]);
+    $user = User::factory()->create(['password' => 'test']);
     $response = $this->postJson(route('auth.login'), ['email' => $user->email, 'password' => 'test']);
     $response->assertStatus(Response::HTTP_OK);
 
@@ -94,11 +99,9 @@ test('can logout', function () {
 
     $response = $this->postJson(route('auth.logout'));
     $response->assertStatus(Response::HTTP_NO_CONTENT);
-
 });
 
 test('can not logout', function () {
     $response = $this->postJson(route('auth.logout'));
     $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-
 });
